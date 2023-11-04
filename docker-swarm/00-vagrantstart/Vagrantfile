@@ -1,6 +1,6 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
-BOX_NAME = "bento/ubuntu-22.04-arm64"
+BOX_NAME = "generic/ubuntu2204"
 MEMORY = "2048"
 CPUS = 2
 VAGRANTFILE_API_VERSION = "2"
@@ -29,10 +29,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     #Setup a set of nodes
 
     config.vm.define "node_1" do | node_1 |
-        node_1.vm.network :private_network, ip: "172.20.20.10"
+        node_1.vm.network :private_network, ip: "192.168.56.10"
         node_1.vm.hostname = "node1"
-        #node_1.vm.provision "shell", path: './setupsh/enableRemote.sh', privileged: true
-        #node_1.vm.provision "shell", path: './setupsh/enableRemoteTLS.sh', privileged: true
+        node_1.vm.provision "shell", path: './setupsh/enableRemote.sh', privileged: true
+        node_1.vm.provision "shell", path: './setupsh/enableRemoteTLS.sh', privileged: true
         #config.vm.synced_folder "./setupsh", "/app"
         #Only configure port to host for Manager01
         node_1.vm.network :forwarded_port, guest: 8080, host: 8088
@@ -43,5 +43,19 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
           vb.customize ["modifyvm", :id, "--cpus", CPUS]
         end
     end
+
+
+    config.vm.define "node_2" do | node_2 |
+      node_2.vm.network :private_network, ip: "192.168.56.11"
+      node_2.vm.hostname = "node2"
+      node_2.vm.provision "shell", path: './setupsh/enableRemote.sh', privileged: true
+      node_2.vm.provision "shell", path: './setupsh/enableRemoteTLS.sh', privileged: true
+      #config.vm.synced_folder "./setupsh", "/app"
+      #Only configure port to host for Manager01
+      config.vm.provider :virtualbox do |vb|
+        vb.customize ["modifyvm", :id, "--memory", MEMORY]
+        vb.customize ["modifyvm", :id, "--cpus", CPUS]
+      end
+  end
 
 end
